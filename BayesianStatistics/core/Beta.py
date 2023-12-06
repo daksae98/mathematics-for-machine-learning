@@ -1,33 +1,26 @@
 import math
+from typing import Any
 import numpy as np
 import sympy as sy
 import matplotlib.pyplot as plt
+from base import BaseDistribution
 
 
-def Beta(a, b):
-    def BetaDistribution(theta):
-        return math.gamma(a+b)/math.gamma(a)/math.gamma(b)*math.pow(theta, a-1)*math.pow(1-theta, b-1)
+class BetaDistribution(BaseDistribution):
 
-    return BetaDistribution
+    def __init_formula__(self, **symbols) -> Any:
+        return sy.gamma(symbols['a'] + symbols['b'])/sy.gamma(symbols['a'])/sy.gamma(symbols['b'])*symbols['theta']**(symbols['a'] - 1)*(1 - symbols['theta'])**(symbols['b'] - 1)
+
+    def get_value(self, theta, a, b):
+        return super().get_value(theta=theta, a=a, b=b)
+
+    def inference(self):
+        return super().inference()
 
 
-def BetaSy(a, b, theta):
-
-    return sy.gamma(a+b)/sy.gamma(a)/sy.gamma(b)*theta**(a-1)*(1-theta)**(b-1)
-
-
-def IntegralBetaSy(a, b):
-
-    BetaDistribution = Beta(a, b)
-
-    theta = np.linspace(0.01, 1, 101)
-
-    points = np.array([[t, BetaDistribution(t)] for t in theta])
-
-    plt.plot(points[:, 0], points[:, 1])
-
-    theta = sy.symbols('theta')
-    beta = BetaSy(a, b, theta)
-    I = sy.Integral(beta, (theta, 0, 1))
-    print(sy.pretty(I))
-    print('\n값:', sy.integrate(beta, (theta, 0, 1)).evalf())
+if __name__ == '__main__':
+    b = BetaDistribution()
+    print(b.get_value(0.5, 10, 2))
+    b.plot(x_symbol='theta', a=16, b=8)
+    b.integrate(('theta', 0, 1), a=10, b=5)
+    print(b)
