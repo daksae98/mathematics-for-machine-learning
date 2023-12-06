@@ -21,10 +21,11 @@ class BaseDistribution:
         self.__formula__ = self.__init_formula__(
             x=x, y=y, z=z, theta=theta, p=p, N=N, k=k, a=a, b=b)
 
-    def __print_formula__(self):
+    def __print_formula__(self, **symbols):
         if self.__formula__ == None:
             raise NotImplementedError('__init_formula__ should be Implemented')
-        print(sy.pretty(self.__formula__))
+        new_formula = self.__formula__.subs(symbols)
+        print(sy.pretty(new_formula))
 
     def get_value(self, **symbols):
         if self.__formula__ == None:
@@ -43,12 +44,20 @@ class BaseDistribution:
         raise NotImplementedError
 
     def plot(self, start=0, end=1, x_symbol='theta', **symbols):
-        self.__print_formula__()
+        self.__print_formula__(**symbols)
 
         x_axis = np.linspace(start, end, min(math.ceil((end-start)*100), 500))
         points = np.array(
             [[x, self.get_value(**symbols, **{x_symbol: x})] for x in x_axis])
         plt.plot(points[:, 0], points[:, 1])
+        plt.show()
+
+    def scatter(self, start=0, end=10, x_symbol='theta', **symbols):
+        self.__print_formula__(**symbols)
+
+        points = np.array(
+            [[x+start, self.get_value(**symbols, **{x_symbol: x})] for x in range(end-start+1)])
+        plt.scatter(points[:, 0], points[:, 1], marker='o')
         plt.show()
 
     def integrate(self, *tuple, **symbols):
@@ -66,7 +75,7 @@ class BaseDistribution:
         '''
         if self.__formula__ == None:
             raise NotImplementedError('__init_formula__ should be Implemented')
-        self.__print_formula__()
+        self.__print_formula__(**symbols)
 
         new_formula = self.__formula__.subs(symbols)
         I = sy.Integral(new_formula, *tuple)

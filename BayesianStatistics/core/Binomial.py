@@ -2,11 +2,17 @@ import numpy as np
 import math
 import sympy as sy
 import matplotlib.pyplot as plt
-from base import BaseDistribution
+from .base import BaseDistribution
 import random
 
 
 class BinomialDistribution(BaseDistribution):
+    '''
+     k        N - k   
+    θ ⋅(1 - θ)     ⋅N!
+    ──────────────────
+    k!⋅(N - k)!    
+    '''
 
     def __init_formula__(self, **symbol):
         return sy.factorial(symbol['N'])/sy.factorial(symbol['k']) / sy.factorial(
